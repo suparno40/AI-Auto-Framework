@@ -1,47 +1,59 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+from dataclasses import dataclass
+
+
+@dataclass
+class PromptFile:
+    path: str
+    category: str
+    name: str
+    content: str
 
 
 def print_header():
     print("=" * 40)
     print(" AI AUTO FRAMEWORK")
-    print(" Prompt Loader v1.1")
+    print(" Prompt Loader v1.2")
     print("=" * 40)
     print()
 
 
-def scan_prompt_files():
-    # Lokasi folder prompts
+def load_prompts():
     project_root = Path(__file__).resolve().parents[2]
     prompts_dir = project_root / "prompts"
 
-    print("Scanning prompts...\n")
+    prompt_files = []
 
-    if not prompts_dir.exists():
-        print("Folder 'prompts' tidak ditemukan!")
-        return []
+    for file in sorted(prompts_dir.rglob("*.md")):
+        content = file.read_text(encoding="utf-8")
 
-    markdown_files = sorted(prompts_dir.rglob("*.md"))
+        prompt = PromptFile(
+            path=str(file.relative_to(project_root)),
+            category=file.parent.name,
+            name=file.stem,
+            content=content
+        )
 
-    if not markdown_files:
-        print("Tidak ada file markdown ditemukan.")
-        return []
+        prompt_files.append(prompt)
 
-    for file in markdown_files:
-        relative = file.relative_to(project_root)
-        print(f"✓ {relative}")
-
-    return markdown_files
+    return prompt_files
 
 
 def main():
     print_header()
 
-    files = scan_prompt_files()
+    prompts = load_prompts()
 
-    print("\n" + "-" * 40)
-    print(f"Total Markdown : {len(files)}")
+    for p in prompts:
+        print(f"✓ {p.path}")
+        print(f"  Category : {p.category}")
+        print(f"  Name     : {p.name}")
+        print(f"  Length   : {len(p.content)} karakter\n")
+
+    print("-" * 40)
+    print(f"Total Markdown : {len(prompts)}")
     print("-" * 40)
 
 
