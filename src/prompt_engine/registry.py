@@ -1,4 +1,4 @@
-from loader import load_prompts
+from prompt_engine.loader import load_prompts
 
 
 def get_by_category(category: str):
