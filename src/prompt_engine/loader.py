@@ -1,5 +1,8 @@
-{
-    "system/base.md": "...isi markdown...",
-    "roles/recruiter.md": "...isi markdown...",
-    "tasks/search_job.md": "...isi markdown..."
-}
+#!/usr/bin/env python3
+
+print("=" * 40)
+print(" AI AUTO FRAMEWORK")
+print(" Prompt Loader v1.0")
+print("=" * 40)
+print()
+print("Prompt Loader berhasil dijalankan.")
