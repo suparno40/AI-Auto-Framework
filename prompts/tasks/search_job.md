@@ -8,7 +8,11 @@ Search job vacancies matching the user's profile.
 2. LinkedIn Jobs
 3. JobStreet
 4. Indeed
-5. Glassdoor
+5. Glints
+6. KitaLulus
+7. Kalibrr
+8. Urbanhire
+9. Loker.id
 
 ## FILTER
 
