@@ -1,8 +1,17 @@
-import logging
-import json
 import os
 import sys
+import logging
+import json
 from dotenv import load_dotenv
+
+# ==========================================
+# SYSTEM DEBUGGING & PATH TRACKING TRICK
+# ==========================================
+# Kode ini mendeteksi posisi file main.py secara real-time, lalu mendaftarkan
+# foldernya ke dalam 'sys.path' Python agar semua modul di sekitarnya terbaca.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
 
 # Memuat variabel lingkungan dari file .env
 load_dotenv()
@@ -13,25 +22,14 @@ logging.basicConfig(
     format='%(asctime)s - [%(levelname)s] - %(message)s'
 )
 
-# Memaksa Python memasang root folder 'src' ke dalam path pencarian lokal
-current_dir = os.path.dirname(os.path.abspath(__file__))
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir)
-
-# Menggunakan Import Langsung yang Selaras dengan Struktur Struktur Folder Anda
-try:
-    from prompt_engine.builder import build_prompt
-    from ai_provider.groq import ask_ai
-    from job_search import JobSearchEngine, RemotiveSource, JobParser
-    from storage import GoogleSheetsStorage
-    from document_generator import CoverLetterGenerator
-except ImportError:
-    # Fallback jika dijalankan dari root luar lingkungan tertentu
-    from src.prompt_engine.builder import build_prompt
-    from src.ai_provider.groq import ask_ai
-    from src.job_search import JobSearchEngine, RemotiveSource, JobParser
-    from src.storage import GoogleSheetsStorage
-    from src.document_generator import CoverLetterGenerator
+# ==========================================
+# TRACKING MODULES SYSTEM (FIXED IMPORT)
+# ==========================================
+# Sekarang Python dijamin bisa membaca modul-modul ini langsung dari folder src
+from ai_provider.groq import ask_ai
+from job_search import JobSearchEngine, RemotiveSource, JobParser
+from storage import GoogleSheetsStorage
+from document_generator import CoverLetterGenerator
 
 def main():
     # 1. Menerima Input Kata Kunci Pencarian dari Pengguna
@@ -56,6 +54,7 @@ def main():
 
     # 4. Pengiriman Data ke Modul Penyimpanan (Storage)
     print("\n[Storage] Mencoba Menyimpan Data ke Google Sheets...")
+    # Menggunakan spreadsheet_id dummy (Koneksi riil kita amankan untuk nanti)
     storage = GoogleSheetsStorage(spreadsheet_id="lintas-akun-spreadsheet-id")
     storage.save_jobs(clean_jobs)
 
@@ -63,6 +62,7 @@ def main():
     json_jobs = json.dumps(clean_jobs, indent=2)
 
     # 6. Pembuatan Prompt Menggunakan Prompt Engine
+    from prompt_engine.builder import build_prompt
     prompt = build_prompt(role="job_hunter", task="search_job", output="json")
     prompt += f"\n\nUSER REQUEST:\n{user_input}\n"
     prompt += f"\nREAL JOB VACANCIES (STANDARDIZED JSON):\n{json_jobs}\n"
